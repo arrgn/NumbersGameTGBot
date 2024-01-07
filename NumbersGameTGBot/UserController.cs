@@ -32,6 +32,15 @@
             return true;
         }
 
+        // If last message's day isn't today or yesterday, so reset user's streak
+        if (user.LastMessageDate.Day != DateTime.Now.ToUniversalTime().Day
+            && user.LastMessageDate.AddDays(1).Day != DateTime.Now.ToUniversalTime().Day)
+        {
+            user.Streak = 0;
+            db.Update(user);
+            db.SaveChanges();
+        }
+
         if (user.Streak + 1 != streak)
             return false;
 
@@ -41,6 +50,7 @@
                 return false;
         }
 
+        // Check for period of time
         var now = DateTime.Now;
         now = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
         var minTime = now.AddHours(TimePeriod.MinTime.Hour).AddMinutes(TimePeriod.MinTime.Minute).AddSeconds(TimePeriod.MinTime.Second);
